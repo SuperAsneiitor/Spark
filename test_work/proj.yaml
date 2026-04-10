@@ -1,0 +1,59 @@
+# =============================================================================
+# proj.yaml  —  Spark 测试项目配置文件
+# 适用环境: test_work/ 沙箱（含 28nm 虚构工艺输入）
+#
+# 使用方式（EDA 服务器 Linux 环境）:
+#   source /path/to/Altas/spark.csh
+#   spark -c /path/to/Altas/test_work/proj.yaml init_env
+#
+# 路径说明: 所有路径建议使用绝对路径。
+#           若在 Linux 上运行，请将下方路径前缀替换为实际挂载路径。
+# =============================================================================
+
+# ---- 项目基本信息 ------------------------------------------------------------
+project:
+  name         : fake_stdcell_28nm  # 项目名，用于 .lib / .lef / .tar.gz 文件命名
+  tech_node    : "28nm"             # 技术节点标识（字符串，仅用于注释/命名）
+  case_name    : fake_stdcell       # case 名称（incoming 目录层级）
+  case_version : v1.0               # case 版本号
+  pvt:                              # PVT Corner 列表（按 ff/tt/ss 顺序）
+    - ff_0p99v_m40c                 # Fast-Fast, 0.99V, -40°C
+    - tt_1p10v_025c                 # Typical-Typical, 1.10V, 25°C
+    - ss_1p21v_125c                 # Slow-Slow, 1.21V, 125°C
+
+# ---- 目录与输入文件路径 ------------------------------------------------------
+paths:
+  # 项目根目录（init_env 在此创建完整项目结构）
+  work_dir   : C:/Users/Asneiitor/Desktop/AI_exploree/Altas/test_work
+
+  # 设计输入文件（测试用模拟文件）
+  gds_source : C:/Users/Asneiitor/Desktop/AI_exploree/Altas/test_work/input/fake_stdcell.gds
+  netlist    : C:/Users/Asneiitor/Desktop/AI_exploree/Altas/test_work/input/fake_stdcell.cdl
+  lef_source : C:/Users/Asneiitor/Desktop/AI_exploree/Altas/test_work/input/tech.lef
+
+# ---- EDA 工具路径（测试环境使用 echo 哑命令，避免实际调用不存在的工具）-------
+tools:
+  calibre  : echo  # 替换为: /eda/calibre/2024/bin/calibre
+  liberate : echo  # 替换为: /eda/liberate/22.1/bin/liberate
+  innovus  : echo  # 替换为: /eda/innovus/22.1/bin/innovus
+  abstract : echo  # 替换为: /eda/abstract/22.1/bin/abstract
+  tetramax : echo  # 替换为: /eda/tmax/2024/bin/tmax
+
+# ---- gen_spice 阶段高级选项 --------------------------------------------------
+gen_spice:
+  # PV (DRC/LVS) 失败时是否继续执行 RC 提取，测试环境设为 true 避免中断
+  continue_on_drc_error: true
+
+# ---- gen_lib 阶段高级选项 ----------------------------------------------------
+gen_lib:
+  # 测试环境使用串行，避免多进程并发带来的日志混乱
+  parallel_corners: false
+
+# ---- gen_dft 阶段高级选项 ----------------------------------------------------
+gen_dft:
+  format: mdt   # 支持: mdt / stil / tetramax
+
+# ---- release 阶段高级选项 ----------------------------------------------------
+release:
+  # 测试环境关闭打包，加快速度
+  bundle_tar: false

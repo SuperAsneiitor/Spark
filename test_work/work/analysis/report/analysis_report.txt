@@ -1,0 +1,10 @@
+Project : fake_stdcell_28nm
+TechNode: 28nm
+Total   : 29
+
+--- Cell Type Distribution ---
+  clock               : 4
+  combinational       : 10
+  filler              : 6
+  sequential          : 6
+  tap                 : 3

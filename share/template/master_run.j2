@@ -1,0 +1,99 @@
+#!/bin/csh -f
+# =============================================================================
+# run_flow.csh  —  Master Run Script
+# Project     : {{ project_name }}
+# Tech Node   : {{ tech_node }}
+# Case        : {{ case_name }} / {{ case_version }}
+# Generated   : {{ gen_time }}
+#
+# 使用方式:
+#   csh -f {{ run_dir }}/run_flow.csh [--from STAGE]
+#
+# 可选参数 --from STAGE: 跳过该阶段之前的所有阶段
+#   可选值: analysis gen_gds gen_spice gen_lib gen_lef gen_dft release
+# =============================================================================
+# DO NOT EDIT MANUALLY — regenerate via: spark -c <cfg> init_env
+# =============================================================================
+
+# ---------- 环境检查 -----------------------------------------------------------
+if ( ! $?SPARK_HOME ) then
+    echo "[ERROR] SPARK_HOME is not set. Please run: source <path>/spark.csh"
+    exit 1
+endif
+
+# ---------- 配置文件路径 -------------------------------------------------------
+set CFG      = "{{ cfg_path }}"
+set ROOT_DIR = "{{ root_dir }}"
+set LOG_DIR  = "$ROOT_DIR/run/log"
+
+if ( ! -d $LOG_DIR ) mkdir -p $LOG_DIR
+set MASTER_LOG = "$LOG_DIR/run_flow_`date '+%Y%m%d_%H%M%S'`.log"
+
+# ---------- 起始阶段解析 -------------------------------------------------------
+set FROM_STAGE = ""
+if ( "$1" == "--from" ) then
+    set FROM_STAGE = "$2"
+endif
+
+# ---------- 工具函数 -----------------------------------------------------------
+alias log_info  'echo "[INFO]  [`date +%H:%M:%S`] \!*" | tee -a $MASTER_LOG'
+alias log_error 'echo "[ERROR] [`date +%H:%M:%S`] \!*" | tee -a $MASTER_LOG'
+alias log_sep   'echo "======================================================" | tee -a $MASTER_LOG'
+
+log_info "Master run started: {{ project_name }}"
+log_info "Config : $CFG"
+log_info "Root   : $ROOT_DIR"
+log_info "Log    : $MASTER_LOG"
+
+# ---------- 阶段执行宏 ---------------------------------------------------------
+# 用法: run_stage <stage_name>
+# 依次执行 create_<stage>_env → run_<stage> → report_<stage> → check_<stage>
+set _SKIP = 1
+{% if from_stage_placeholder %}set _SKIP = 0{% endif %}
+
+{% for stage in stages %}
+# ---- Stage: {{ stage }} -------------------------------------------------------
+log_sep
+log_info "Stage [{{ loop.index }}/{{ stages | length }}]: {{ stage }}"
+
+if ( "$FROM_STAGE" == "{{ stage }}" ) set _SKIP = 0
+if ( $_SKIP ) then
+    log_info "[SKIP] {{ stage }} (before --from stage)"
+    goto next_{{ stage }}
+endif
+
+log_info "  => create_{{ stage }}_env"
+spark -c $CFG create_{{ stage }}_env >>& $MASTER_LOG
+if ( $status != 0 ) then
+    log_error "create_{{ stage }}_env failed. Aborting."
+    exit 1
+endif
+
+log_info "  => run_{{ stage }}"
+spark -c $CFG run_{{ stage }} >>& $MASTER_LOG
+set _RC = $status
+
+log_info "  => report_{{ stage }}"
+spark -c $CFG report_{{ stage }} >>& $MASTER_LOG
+
+if ( $_RC != 0 ) then
+    log_error "run_{{ stage }} failed (rc=$_RC). Aborting."
+    exit $_RC
+endif
+
+log_info "  => check_{{ stage }}"
+spark -c $CFG check_{{ stage }} >>& $MASTER_LOG
+if ( $status != 0 ) then
+    log_info "  [WARN] check_{{ stage }} reported issues — see rpt/ for details."
+endif
+
+log_info "Stage {{ stage }} completed."
+next_{{ stage }}:
+
+{% endfor %}
+# ---------- 完成 ---------------------------------------------------------------
+log_sep
+log_info "All stages completed successfully."
+log_info "Release artifacts: $ROOT_DIR/release/"
+log_info "Master log       : $MASTER_LOG"
+exit 0

@@ -1,0 +1,19 @@
+# =============================================================================
+# fake_stdcell.gds  —  Spark 测试用 GDS 占位文件
+#
+# 注意：真实 GDS 为二进制格式（GDSII Stream Format），
+#       此文件仅用于测试框架流程（目录创建、脚本生成、软链接等），
+#       不可直接用于 EDA 工具导入。
+#
+# 替换方式：将真实工艺 PDK 提供的 stdcell.gds 复制至本目录并重命名即可。
+# =============================================================================
+# Mock GDSII placeholder
+# Design   : fake_stdcell
+# TechNode : 28nm
+# Cells    : INVX1 INVX2 INVX4 BUFX2 BUFX4
+#            NAND2X1 NAND3X1 NOR2X1 AO21X1 MUX2X1
+#            DFFX1 DFFX2 DFFRNX1 DFFSNX1 SDFFX1 LATCHX1
+#            CLKBUFX2 CLKBUFX4 CLKINVX1 CLKGATEX1
+#            FILL1 FILL2 FILL4 FILL8 DECAP4 DECAP8
+#            TAPVDD TAPVSS ENDCAP
+# =============================================================================

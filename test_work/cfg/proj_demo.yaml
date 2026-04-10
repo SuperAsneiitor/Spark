@@ -1,0 +1,34 @@
+# =============================================================================
+# proj_demo.yaml  —  Demo configuration for fake_stdcell_28nm
+# Generated     : 2026-04-10 17:01:28
+# Usage         : cp cfg/proj_demo.yaml cfg/proj.yaml  (then edit paths/tools)
+# =============================================================================
+
+project:
+  name: fake_stdcell_28nm
+  tech_node: 28nm
+  case_name: fake_stdcell
+  case_version: v1.0
+  pvt:
+  - ff_0p99v_m40c
+  - tt_1p10v_025c
+  - ss_1p21v_125c
+paths:
+  work_dir: C:\Users\Asneiitor\Desktop\AI_exploree\Altas\test_work
+  gds_source: C:\Users\Asneiitor\Desktop\AI_exploree\Altas\test_work\input\fake_stdcell.gds
+  netlist: C:\Users\Asneiitor\Desktop\AI_exploree\Altas\test_work\input\fake_stdcell.cdl
+  lef_source: C:\Users\Asneiitor\Desktop\AI_exploree\Altas\test_work\input\tech.lef
+tools:
+  calibre: echo
+  liberate: echo
+  innovus: echo
+  abstract: echo
+  tetramax: echo
+gen_spice:
+  continue_on_drc_error: false
+gen_lib:
+  parallel_corners: true
+gen_dft:
+  format: mdt
+release:
+  bundle_tar: true

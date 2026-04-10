@@ -1,0 +1,203 @@
+# =============================================================================
+# tech.lef  —  Spark 测试用最小化 LEF 文件（28nm 虚构工艺）
+# =============================================================================
+
+VERSION 5.8 ;
+BUSBITCHARS "[]" ;
+DIVIDERCHAR "/" ;
+
+UNITS
+  DATABASE MICRONS 2000 ;
+END UNITS
+
+MANUFACTURINGGRID 0.005 ;
+
+# ---- 金属层定义 --------------------------------------------------------------
+
+LAYER M1
+  TYPE ROUTING ;
+  DIRECTION HORIZONTAL ;
+  PITCH 0.090 ;
+  WIDTH 0.040 ;
+  SPACING 0.040 ;
+  RESISTANCE RPERSQ 0.082 ;
+  CAPACITANCE CPERSQDIST 1.5e-04 ;
+END M1
+
+LAYER M2
+  TYPE ROUTING ;
+  DIRECTION VERTICAL ;
+  PITCH 0.090 ;
+  WIDTH 0.040 ;
+  SPACING 0.040 ;
+  RESISTANCE RPERSQ 0.082 ;
+  CAPACITANCE CPERSQDIST 1.3e-04 ;
+END M2
+
+LAYER M3
+  TYPE ROUTING ;
+  DIRECTION HORIZONTAL ;
+  PITCH 0.090 ;
+  WIDTH 0.040 ;
+  SPACING 0.040 ;
+  RESISTANCE RPERSQ 0.070 ;
+  CAPACITANCE CPERSQDIST 1.2e-04 ;
+END M3
+
+# ---- 过孔层定义 --------------------------------------------------------------
+
+LAYER VIA1
+  TYPE CUT ;
+  WIDTH  0.040 ;
+  SPACING 0.050 ;
+  RESISTANCE 5.0 ;
+END VIA1
+
+LAYER VIA2
+  TYPE CUT ;
+  WIDTH  0.040 ;
+  SPACING 0.050 ;
+  RESISTANCE 5.0 ;
+END VIA2
+
+# ---- 标准单元抽象（Mini-LEF，仅列举代表性单元）-------------------------------
+
+MACRO INVX1
+  CLASS CORE ;
+  FOREIGN INVX1 0.000 0.000 ;
+  ORIGIN 0.000 0.000 ;
+  SIZE 0.280 BY 1.680 ;
+  SYMMETRY X Y ;
+  SITE CoreSite ;
+  PIN A
+    DIRECTION INPUT ;
+    USE SIGNAL ;
+    PORT
+      LAYER M1 ;
+        RECT 0.040 0.700 0.100 0.980 ;
+    END
+  END A
+  PIN ZN
+    DIRECTION OUTPUT ;
+    USE SIGNAL ;
+    PORT
+      LAYER M1 ;
+        RECT 0.180 0.700 0.240 0.980 ;
+    END
+  END ZN
+  PIN VDD
+    DIRECTION INOUT ;
+    USE POWER ;
+    PORT
+      LAYER M1 ;
+        RECT 0.000 1.540 0.280 1.680 ;
+    END
+  END VDD
+  PIN VSS
+    DIRECTION INOUT ;
+    USE GROUND ;
+    PORT
+      LAYER M1 ;
+        RECT 0.000 0.000 0.280 0.140 ;
+    END
+  END VSS
+  OBS
+    LAYER M2 ;
+      RECT 0.000 0.000 0.280 1.680 ;
+  END
+END INVX1
+
+MACRO DFFX1
+  CLASS CORE ;
+  FOREIGN DFFX1 0.000 0.000 ;
+  ORIGIN 0.000 0.000 ;
+  SIZE 1.120 BY 1.680 ;
+  SYMMETRY X Y ;
+  SITE CoreSite ;
+  PIN D
+    DIRECTION INPUT ;
+    USE SIGNAL ;
+    PORT
+      LAYER M1 ;
+        RECT 0.040 0.700 0.100 0.980 ;
+    END
+  END D
+  PIN CLK
+    DIRECTION INPUT ;
+    USE CLOCK ;
+    PORT
+      LAYER M1 ;
+        RECT 0.200 0.700 0.260 0.980 ;
+    END
+  END CLK
+  PIN Q
+    DIRECTION OUTPUT ;
+    USE SIGNAL ;
+    PORT
+      LAYER M1 ;
+        RECT 0.900 0.700 0.960 0.980 ;
+    END
+  END Q
+  PIN QN
+    DIRECTION OUTPUT ;
+    USE SIGNAL ;
+    PORT
+      LAYER M1 ;
+        RECT 1.020 0.700 1.080 0.980 ;
+    END
+  END QN
+  PIN VDD
+    DIRECTION INOUT ;
+    USE POWER ;
+    PORT
+      LAYER M1 ;
+        RECT 0.000 1.540 1.120 1.680 ;
+    END
+  END VDD
+  PIN VSS
+    DIRECTION INOUT ;
+    USE GROUND ;
+    PORT
+      LAYER M1 ;
+        RECT 0.000 0.000 1.120 0.140 ;
+    END
+  END VSS
+  OBS
+    LAYER M2 ;
+      RECT 0.000 0.000 1.120 1.680 ;
+  END
+END DFFX1
+
+MACRO FILL4
+  CLASS CORE SPACER ;
+  FOREIGN FILL4 0.000 0.000 ;
+  ORIGIN 0.000 0.000 ;
+  SIZE 0.560 BY 1.680 ;
+  SYMMETRY X Y ;
+  SITE CoreSite ;
+  PIN VDD
+    DIRECTION INOUT ;
+    USE POWER ;
+    PORT
+      LAYER M1 ;
+        RECT 0.000 1.540 0.560 1.680 ;
+    END
+  END VDD
+  PIN VSS
+    DIRECTION INOUT ;
+    USE GROUND ;
+    PORT
+      LAYER M1 ;
+        RECT 0.000 0.000 0.560 0.140 ;
+    END
+  END VSS
+END FILL4
+
+# ---- 标准单元 Site 定义 ------------------------------------------------------
+
+SITE CoreSite
+  CLASS CORE ;
+  SIZE 0.140 BY 1.680 ;
+END CoreSite
+
+END LIBRARY
