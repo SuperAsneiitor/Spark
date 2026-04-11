@@ -128,3 +128,23 @@ class GenXxxComponent(BaseComponent):
   - 日志是否落在 `run/log/`
   - `check_result` 是否可定位失败原因
 
+---
+
+## 8. Nuitka 打包与运行时路径
+
+如果你在做以下改动，建议同步查看 `share/doc/NUITKA_BUILD.md`：
+
+- `bin/spark`
+- `lib/core/runtime_paths.py`
+- `lib/core/template_engine.py`
+- `share/template/`
+- `spark_system.yaml`
+- 新增第三方依赖或动态资源文件
+
+原因是这些改动会直接影响源码运行与 Nuitka `spark.dist` 运行是否保持一致。`NUITKA_BUILD.md` 中已经补充了：
+
+- 开发树与发行目录的结构对照
+- `get_spark_home()` 的详细流程图
+- `scripts/build_nuitka.sh` 的打包流程
+- 用户交付、验证与排障建议
+

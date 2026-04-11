@@ -33,6 +33,12 @@ pip install -r requirements.txt
 source /path/to/Altas/spark.csh
 ```
 
+如果你不是从源码仓库运行，而是使用 Linux 下分发的 `spark.dist/` 二进制目录，请同时阅读 `share/doc/NUITKA_BUILD.md`。其中说明了：
+
+- 为什么推荐设置 `SPARK_HOME`
+- `spark` 与 `share/template/` 的目录关系
+- 如何在目标机上解压、运行与排障
+
 ---
 
 ## 4. 配置文件最小必需字段
