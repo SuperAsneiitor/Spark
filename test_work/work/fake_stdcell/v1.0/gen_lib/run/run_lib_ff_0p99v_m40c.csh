@@ -16,12 +16,12 @@ if ( ! $?SPARK_HOME ) then
 endif
 
 # ---------- 运行目录切换 -------------------------------------------------------
-set RUN_DIR = "C:\Users\Asneiitor\Desktop\AI_exploree\Altas\test_work\work\gen_lib\run"
+set RUN_DIR = "C:\Users\Asneiitor\Desktop\AI_exploree\Altas\test_work\work\fake_stdcell\v1.0\gen_lib\run"
 if ( ! -d $RUN_DIR ) mkdir -p $RUN_DIR
 cd $RUN_DIR
 
 # ---------- 日志目录 -----------------------------------------------------------
-set LOG_DIR = "C:\Users\Asneiitor\Desktop\AI_exploree\Altas\test_work\work\gen_lib\run\log"
+set LOG_DIR = "C:\Users\Asneiitor\Desktop\AI_exploree\Altas\test_work\work\fake_stdcell\v1.0\gen_lib\run\log"
 if ( ! -d $LOG_DIR ) mkdir -p $LOG_DIR
 set LOG_FILE = "$LOG_DIR/gen_lib.log"
 
@@ -42,7 +42,7 @@ endif
 
 # ---------- 输入/输出路径（若适用）-------------------------------------------
 set NETLIST       = "C:\Users\Asneiitor\Desktop\AI_exploree\Altas\test_work\input\fake_stdcell.cdl"
-set OUTPUT_LIB    = "C:\Users\Asneiitor\Desktop\AI_exploree\Altas\test_work\work\gen_lib\release\output_file\ff_0p99v_m40c\fake_stdcell_28nm_ff_0p99v_m40c.lib"
+set OUTPUT_LIB    = "C:\Users\Asneiitor\Desktop\AI_exploree\Altas\test_work\work\fake_stdcell\v1.0\gen_lib\release\output_file\ff_0p99v_m40c\fake_stdcell_28nm_ff_0p99v_m40c.lib"
 
 # ---------- 主体执行 -----------------------------------------------------------
 echo "[INFO]  Executing Liberate 特征化 [ff_0p99v_m40c]..." | tee -a $LOG_FILE

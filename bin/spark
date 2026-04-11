@@ -3,19 +3,40 @@
 # bin/spark - Spark StdCell 自动化框架 CLI 主入口
 # 使用: spark <command> [options]
 # =============================================================================
-import sys
-import os
 import argparse
+import os
+import sys
 from pathlib import Path
 
-# 将项目根目录插入 sys.path，确保 lib 包可被正确导入
-_SPARK_ROOT = Path(__file__).resolve().parent.parent
-sys.path.insert(0, str(_SPARK_ROOT))
+# 源码运行：先把含 lib/ 的仓库根加入 sys.path；Nuitka standalone 无磁盘 lib/，由编译产物提供 import
+_argv_dir = Path(sys.argv[0]).resolve().parent
+for _root in filter(
+    None,
+    [
+        Path(os.environ["SPARK_HOME"]).resolve()
+        if os.environ.get("SPARK_HOME", "").strip()
+        else None,
+        _argv_dir,
+        _argv_dir.parent,
+    ],
+):
+    if (_root / "lib" / "core" / "runtime_paths.py").is_file():
+        _s = str(_root)
+        if _s not in sys.path:
+            sys.path.insert(0, _s)
+        break
+
+from lib.core.runtime_paths import ensure_repo_on_syspath, get_spark_home  # noqa: E402
+
+ensure_repo_on_syspath()
 
 from lib.utils.logger import get_logger, setup_rich_logging
 from lib.core.config_parser import SparkConfig
+from lib.core.license_guard import run_pre_command_license_check
 from lib.modules.init_env   import InitEnvComponent
 from lib.modules.analysis   import AnalysisComponent
+from lib.modules.porting_gds import PortingGdsComponent
+from lib.modules.porting_lef import PortingLefComponent
 from lib.modules.gen_gds    import GenGdsComponent
 from lib.modules.gen_spice  import GenSpiceComponent
 from lib.modules.gen_lib    import GenLibComponent
@@ -29,7 +50,9 @@ logger = get_logger("spark")
 # ---- 阶段注册表 ---------------------------------------------------------------
 STAGE_MAP: dict[str, type] = {
     "init_env"  : InitEnvComponent,
-    "analysis"  : AnalysisComponent,
+    "analysis"     : AnalysisComponent,
+    "porting_gds"  : PortingGdsComponent,
+    "porting_lef"  : PortingLefComponent,
     "gen_gds"   : GenGdsComponent,
     "gen_spice" : GenSpiceComponent,
     "gen_lib"   : GenLibComponent,
@@ -102,7 +125,7 @@ def build_parser() -> argparse.ArgumentParser:
         )
         subparsers.add_parser(
             f"report_{stage}",
-            help=f"抽取 {stage} 阶段报告，写入 rpt/ 目录",
+            help=f"抽取 {stage} 阶段报告，写入 report/ 目录",
         )
 
     # ---- 全流程快捷命令 -------------------------------------------------------
@@ -156,9 +179,14 @@ def main() -> None:
         parser.print_help()
         sys.exit(0)
 
+    run_pre_command_license_check(get_spark_home())
+
     try:
         config = SparkConfig(args.config)
     except FileNotFoundError as exc:
+        logger.error(str(exc))
+        sys.exit(1)
+    except ValueError as exc:
         logger.error(str(exc))
         sys.exit(1)
 

@@ -9,11 +9,11 @@
 # ---------- 全局变量 ----------------------------------------------------------
 set DESIGN_NAME   "fake_stdcell_28nm"
 set TECH_NODE     "28nm"
-set RUN_DIR       "C:\Users\Asneiitor\Desktop\AI_exploree\Altas\test_work\work\gen_gds\run"
-set LOG_DIR       "C:\Users\Asneiitor\Desktop\AI_exploree\Altas\test_work\work\gen_gds\run\log"
+set RUN_DIR       "C:\Users\Asneiitor\Desktop\AI_exploree\Altas\test_work\work\fake_stdcell\v1.0\gen_gds\run"
+set LOG_DIR       "C:\Users\Asneiitor\Desktop\AI_exploree\Altas\test_work\work\fake_stdcell\v1.0\gen_gds\run\log"
 
 set GDS_SOURCE    "C:\Users\Asneiitor\Desktop\AI_exploree\Altas\test_work\input\fake_stdcell.gds"
-set OUTPUT_GDS    "C:\Users\Asneiitor\Desktop\AI_exploree\Altas\test_work\work\gen_gds\release\output_file\stdcell_merge.gds"
+set OUTPUT_GDS    "C:\Users\Asneiitor\Desktop\AI_exploree\Altas\test_work\work\fake_stdcell\v1.0\gen_gds\release\output_file\stdcell_merge.gds"
 
 # ---------- 消息日志 ----------------------------------------------------------
 proc spark_log { level msg } {

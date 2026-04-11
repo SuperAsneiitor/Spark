@@ -16,14 +16,15 @@ from typing import Any
 
 from jinja2 import Environment, FileSystemLoader, StrictUndefined, TemplateNotFound
 
+from lib.core.runtime_paths import get_spark_home
+
 
 def _get_default_template_dir() -> Path:
-    """推断 share/template 路径：优先读取 SPARK_TMPL 环境变量，否则按相对位置定位。"""
+    """推断 share/template 路径：优先 SPARK_TMPL，否则相对 SPARK_HOME（含 Nuitka standalone）。"""
     env_path = os.environ.get("SPARK_TMPL")
     if env_path:
         return Path(env_path)
-    # 本文件位于 lib/core/，向上两级到项目根，再拼接 share/template
-    return Path(__file__).resolve().parent.parent.parent / "share" / "template"
+    return get_spark_home() / "share" / "template"
 
 
 def _build_env(template_dir: Path) -> Environment:

@@ -18,6 +18,9 @@ set GDS_SOURCE    "{{ gds_source }}"
 {% if output_gds is defined %}
 set OUTPUT_GDS    "{{ output_gds }}"
 {% endif %}
+{% if output_lef is defined %}
+set OUTPUT_LEF    "{{ output_lef }}"
+{% endif %}
 {% if lef_source is defined %}
 set LEF_SOURCE    "{{ lef_source }}"
 {% endif %}
@@ -65,6 +68,14 @@ stream_out $OUTPUT_GDS \
     -map_file ${SPARK_TMPL}/gds_layer.map
 
 spark_log INFO "GDS export completed: $OUTPUT_GDS"
+{% endif %}
+
+# ---------- LEF 导出（porting_lef 等阶段）--------------------------------------
+{% if output_lef is defined %}
+spark_log INFO "Exporting ported LEF to: $OUTPUT_LEF"
+# 选项依 Innovus 版本与 PDK 要求调整
+write_lef $OUTPUT_LEF
+spark_log INFO "LEF export completed: $OUTPUT_LEF"
 {% endif %}
 
 # ---------- 收尾 --------------------------------------------------------------

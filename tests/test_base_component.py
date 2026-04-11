@@ -71,8 +71,8 @@ class TestGenSpiceComponent:
             comp.create_env()
         assert (comp.stage_dir / "run").exists()
         assert (comp.stage_dir / "scr").exists()
-        assert (comp.stage_dir / "log").exists()
-        assert (comp.stage_dir / "rpt").exists()
+        assert (comp.stage_dir / "run" / "log").exists()
+        assert (comp.stage_dir / "report").exists()
         assert (comp.stage_dir / "release" / "output_file").exists()
 
     def test_run_calls_pv_then_rc(self, config: SparkConfig):
@@ -138,7 +138,7 @@ M1 Q CLK VDD VDD PMOS w=1u l=0.1u
         assert types.get("FILL4") == "filler"
 
     def test_run_creates_reports(self, config: SparkConfig, tmp_path: Path):
-        """run() 应在 rpt/ 下生成 target_list.txt 和 analysis_report.txt。"""
+        """run() 应在 report/ 下生成 target_list.txt 和 analysis_report.txt。"""
         netlist = tmp_path / "fake.cdl"
         netlist.write_text(self.CDL_CONTENT, encoding="utf-8")
 

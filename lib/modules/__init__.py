@@ -4,6 +4,8 @@ from .base_component import BaseComponent
 
 from .init_env  import InitEnvComponent
 from .analysis  import AnalysisComponent
+from .porting_gds import PortingGdsComponent
+from .porting_lef import PortingLefComponent
 from .gen_gds   import GenGdsComponent
 from .gen_spice import GenSpiceComponent
 from .gen_lib   import GenLibComponent
@@ -15,6 +17,8 @@ __all__ = [
     "BaseComponent",
     "InitEnvComponent",
     "AnalysisComponent",
+    "PortingGdsComponent",
+    "PortingLefComponent",
     "GenGdsComponent",
     "GenSpiceComponent",
     "GenLibComponent",

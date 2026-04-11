@@ -10,7 +10,7 @@
 
 适用范围：
 
-- `lib/core/*`
+- `lib/core/*`（含 `spark_system.yaml` 加载与 `license_guard`）
 - `lib/modules/base_component.py`
 - `lib/modules/<stage>/<stage>.py`
 - `bin/spark`
@@ -19,10 +19,17 @@
 
 ## 2. 核心对象与职责
 
+## 2.0 系统配置与 License
+
+- 文件：默认 `<SPARK_HOME>/spark_system.yaml`，或 `SPARK_SYSTEM_CONFIG`。
+- `license_check.enabled`：为真时 `bin/spark` 在加载项目 YAML 前调用 `run_pre_command_license_check`。
+- 扩展：实现 `LicenseAllowlistProvider` 并 `set_license_allowlist_provider()`。
+
 ## 2.1 `SparkConfig`
 
-- 输入：YAML 文件路径
+- 输入：YAML 文件路径（或 Fernet 密文文件路径，见下）
 - 输出：强类型配置访问能力
+- 密文（内部机制，无对外加解密命令）：当环境变量 `SPARK_ENCRYPTED_CONFIG` 为真且已设置 `SPARK_FERNET_KEY` 时，由 `lib.utils.config_crypto` 解密后再 `yaml.safe_load`。
 - 约束：
   - 缺失必填字段必须抛 `ConfigKeyError`
   - 路径字段返回 `Path` 对象
@@ -52,7 +59,7 @@
 - 必须实现：`_generate_scripts()`
 - 可选重写：`run()`、`_extra_setup()`、`_expected_outputs()`、`_extra_report_patterns()`
 
-目录契约（阶段根为 `work/<stage>/`）：
+目录契约（阶段根为 `work/<case_name>/<case_version>/<stage>/`）：
 
 - `run/`, `run/log/`
 - `scr/`

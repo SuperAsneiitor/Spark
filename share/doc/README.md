@@ -15,6 +15,7 @@
 - 开发者文档：`share/doc/DEVELOPER_GUIDE.md`
 - 接口级规范：`share/doc/INTERFACE_SPEC.md`
 - 演示 Demo：`share/doc/DEMO.md`
+- **Nuitka Linux 二进制打包**（目录结构、`SPARK_HOME`、构建步骤）：`share/doc/NUITKA_BUILD.md`
 
 ---
 

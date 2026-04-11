@@ -96,6 +96,10 @@ class TestSparkConfigProperties:
     def test_tool_path_fallback(self, valid_config: SparkConfig):
         assert valid_config.tool_path("unknown_tool") == "unknown_tool"
 
+    def test_case_name_defaults_to_project_name(self, valid_config: SparkConfig):
+        assert valid_config.case_name == "test_lib"
+        assert valid_config.case_version == "v1.0"
+
 
 class TestSparkConfigGet:
     def test_get_existing_key(self, valid_config: SparkConfig):

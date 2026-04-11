@@ -24,7 +24,7 @@ Spark 的约束是：
   - `shell_runner.py`：外部命令执行与日志
 - `lib/modules/`
   - `base_component.py`：流程骨架与通用能力
-  - 各阶段子包：`analysis/`, `gen_gds/`, `gen_spice/`, ...
+  - 各阶段子包：`analysis/`, `porting_gds/`, `porting_lef/`, `gen_gds/`, `gen_spice/`, ...
 - `lib/utils/`
   - `logger.py`, `file_utils.py`
 - `bin/spark`
@@ -37,6 +37,8 @@ Spark 的约束是：
 现在每个模块都是子包，例如：
 
 - `lib/modules/analysis/analysis.py`
+- `lib/modules/porting_gds/porting_gds.py`
+- `lib/modules/porting_lef/porting_lef.py`
 - `lib/modules/gen_gds/gen_gds.py`
 - `lib/modules/init_env/init_env.py`
 
@@ -53,6 +55,7 @@ from lib.modules.gen_spice import GenSpiceComponent
 
 `lib/modules/base_component.py` 已提供：
 
+- 阶段根目录：`work/<case_name>/<case_version>/<stage>/`（与 `project.case_name` / `project.case_version` 及 `incoming/` 对齐）
 - 标准目录创建（含 `run/log`, `check/rpt`, `report`）
 - 默认 `run`（执行 `run_<stage>.csh`）
 - `check_result()`：

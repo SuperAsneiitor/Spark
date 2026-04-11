@@ -18,6 +18,8 @@ from lib.utils.logger import setup_rich_logging, get_logger
 from lib.core.config_parser import SparkConfig
 from lib.modules.init_env   import InitEnvComponent
 from lib.modules.analysis   import AnalysisComponent
+from lib.modules.porting_gds import PortingGdsComponent
+from lib.modules.porting_lef import PortingLefComponent
 from lib.modules.gen_gds    import GenGdsComponent
 from lib.modules.gen_spice  import GenSpiceComponent
 from lib.modules.gen_lib    import GenLibComponent
@@ -32,7 +34,9 @@ CFG_PATH = Path(__file__).resolve().parent / "proj.yaml"
 
 STAGES = [
     ("init_env",  InitEnvComponent),
-    ("analysis",  AnalysisComponent),
+    ("analysis",      AnalysisComponent),
+    ("porting_gds",   PortingGdsComponent),
+    ("porting_lef",   PortingLefComponent),
     ("gen_gds",   GenGdsComponent),
     ("gen_spice", GenSpiceComponent),
     ("gen_lib",   GenLibComponent),

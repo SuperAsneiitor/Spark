@@ -4,9 +4,13 @@ lib/core/config_parser.py
 """
 from __future__ import annotations
 
+import os
 import yaml
 from pathlib import Path
 from typing import Any
+
+# 为 1/true/yes 时，-c 指向的文件按 Fernet 密文读取（由 lib.utils.config_crypto 解密，无对外 CLI）
+_SPARK_ENCRYPTED_CONFIG_ENV = "SPARK_ENCRYPTED_CONFIG"
 
 
 class ConfigKeyError(KeyError):
@@ -18,11 +22,16 @@ class SparkConfig:
     """
     项目配置中心，所有模块通过本类获取参数，不直接读取文件。
 
+    若环境变量 ``SPARK_ENCRYPTED_CONFIG`` 为真且 ``SPARK_FERNET_KEY`` 已设置，
+    则 ``cfg_path`` 指向的文件按 Fernet 密文读取并在内存中解析（无对外加解密 CLI）。
+
     配置 YAML 示例结构::
 
         project:
           name: my_stdcell_lib
           tech_node: "28nm"
+          case_name: my_case
+          case_version: v1.0
           pvt: ["ff_0p99v_m40c", "tt_1p1v_25c", "ss_1p21v_125c"]
 
         paths:
@@ -44,11 +53,26 @@ class SparkConfig:
     # ------------------------------------------------------------------
     # 内部加载
     # ------------------------------------------------------------------
+    @staticmethod
+    def _encrypted_config_env_enabled() -> bool:
+        v = os.environ.get(_SPARK_ENCRYPTED_CONFIG_ENV, "").strip().lower()
+        return v in ("1", "true", "yes", "on")
+
     def _load_yaml(self) -> dict[str, Any]:
         if not self.cfg_file.exists():
             raise FileNotFoundError(f"配置文件不存在: {self.cfg_file}")
-        with open(self.cfg_file, "r", encoding="utf-8") as fh:
-            result = yaml.safe_load(fh)
+
+        if self._encrypted_config_env_enabled():
+            from lib.utils.config_crypto import ConfigCryptoError, decrypt_file_to_text
+            try:
+                text = decrypt_file_to_text(self.cfg_file)
+            except ConfigCryptoError as exc:
+                raise ValueError(str(exc)) from exc
+            result = yaml.safe_load(text)
+        else:
+            with open(self.cfg_file, "r", encoding="utf-8") as fh:
+                result = yaml.safe_load(fh)
+
         if not isinstance(result, dict):
             raise ValueError(f"配置文件格式错误，顶层必须为 YAML Mapping: {self.cfg_file}")
         return result
@@ -86,6 +110,16 @@ class SparkConfig:
     @property
     def tech_node(self) -> str:
         return self.get("project", "tech_node", default="unknown")
+
+    @property
+    def case_name(self) -> str:
+        """与 incoming/ 及 work/ 下 case 沙箱目录名一致；未配置时回退为 project.name。"""
+        return self.get("project", "case_name", default=self.project_name)
+
+    @property
+    def case_version(self) -> str:
+        """case 版本子目录名；未配置时默认为 v1.0。"""
+        return self.get("project", "case_version", default="v1.0")
 
     @property
     def pvt_corners(self) -> list[str]:

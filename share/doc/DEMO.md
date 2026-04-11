@@ -55,11 +55,11 @@ python bin/spark -c test_work/proj.yaml report_analysis
 
 检查以下文件是否生成：
 
-- `test_work/work/analysis/run/run_analysis.csh`
-- `test_work/work/analysis/report/analysis_report.txt`
-- `test_work/work/analysis/report/target_list.txt`
-- `test_work/work/analysis/check/rpt/analysis_check.rpt`
-- `test_work/work/analysis/report/analysis_summary.rpt`
+- `test_work/work/fake_stdcell/v1.0/analysis/run/run_analysis.csh`
+- `test_work/work/fake_stdcell/v1.0/analysis/report/analysis_report.txt`
+- `test_work/work/fake_stdcell/v1.0/analysis/report/target_list.txt`
+- `test_work/work/fake_stdcell/v1.0/analysis/check/rpt/analysis_check.rpt`
+- `test_work/work/fake_stdcell/v1.0/analysis/report/analysis_summary.rpt`
 
 ---
 
@@ -79,7 +79,7 @@ python bin/spark -c test_work/proj.yaml run_all --from-stage gen_lib
 
 ## 6. 你将看到的目录结构（示例）
 
-`test_work/work/analysis/`：
+`test_work/work/fake_stdcell/v1.0/analysis/`（`proj.yaml` 中 `case_name` / `case_version`）：
 
 ```
 run/
@@ -97,9 +97,9 @@ release/extract_result/
 
 ## 7. 故障定位最短路径
 
-- 执行失败：优先看 `work/<stage>/run/log/*.log`
-- 校验失败：看 `work/<stage>/check/rpt/<stage>_check.rpt`
-- 报告异常：看 `work/<stage>/report/<stage>_summary.rpt`
+- 执行失败：优先看 `work/<case>/<version>/<stage>/run/log/*.log`
+- 校验失败：看 `work/<case>/<version>/<stage>/check/rpt/<stage>_check.rpt`
+- 报告异常：看 `work/<case>/<version>/<stage>/report/<stage>_summary.rpt`
 
 ---
 

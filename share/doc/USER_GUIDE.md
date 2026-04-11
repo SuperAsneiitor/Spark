@@ -59,7 +59,8 @@ tools:
   tetramax: tmax
 ```
 
-`work_dir` 是项目根目录，`init_env` 会直接在这里创建 `work/ incoming/ release/ cfg/ run/`。
+`work_dir` 是项目根目录，`init_env` 会直接在这里创建 `work/ incoming/ release/ cfg/ run/`。  
+各阶段实际沙箱在 `work/<case_name>/<case_version>/` 下；若 YAML 未写 `case_name`，则与 `project.name` 相同；未写 `case_version` 则为 `v1.0`。
 
 ---
 
@@ -73,7 +74,7 @@ python bin/spark -c test_work/proj.yaml init_env
 
 ## 5.2 对每个阶段分别操作
 
-以 `gen_spice` 为例：
+以 `gen_spice` 为例（`porting_gds` / `porting_lef` 与 `gen_gds` 相同：`create_*_env`、`run_*`、`check_*`、`report_*`）：
 
 ```bash
 python bin/spark -c test_work/proj.yaml create_gen_spice_env
@@ -95,7 +96,7 @@ python bin/spark -c test_work/proj.yaml run_all --from-stage gen_lib
 
 ## 6. 阶段目录结构（每功能一个目录）
 
-每个阶段位于：`<project_root>/work/<stage>/`
+每个阶段位于：`<project_root>/work/<case_name>/<case_version>/<stage>/`（`case_name` / `case_version` 来自 `project:` 配置，与 `incoming/` 一致）
 
 ```
 run/                 # 运行脚本
@@ -117,7 +118,7 @@ release/extract_result/
   - 因为 `init_env` 是项目初始化命令，语义上保留单命令。
 
 - `check_*` 失败怎么办？
-  - 先看 `work/<stage>/check/rpt/<stage>_check.rpt`，再回看 `run/log/*.log`。
+  - 先看 `work/<case>/<version>/<stage>/check/rpt/<stage>_check.rpt`，再回看同阶段下 `run/log/*.log`。
 
 - `report_*` 有什么意义？
   - 把关键错误、告警、产出文件汇总成稳定格式，方便评审、归档和 CI 上传。
@@ -127,7 +128,37 @@ release/extract_result/
 
 ---
 
-## 8. 推荐执行顺序
+## 8. License / 账号授权（系统配置）
+
+与项目 `proj.yaml` 独立，使用安装根目录下的 **`spark_system.yaml`**（或通过环境变量 **`SPARK_SYSTEM_CONFIG`** 指定路径，可为绝对路径或相对 SPARK 根目录）。
+
+```yaml
+license_check:
+  enabled: false          # true 时每次 spark 命令执行前检查
+  allowed_users: []       # 与 Linux ``whoami`` 输出一致的用户名
+  # allowed_users_file: share/license_allowlist.txt  # 可选，每行一名
+```
+
+- 检查在 **`bin/spark` 解析子命令之后、加载 `-c` 项目配置之前**执行。
+- **二次开发**：实现 `lib.core.license_guard.LicenseAllowlistProvider`，调用 `set_license_allowlist_provider()` 可接入 LDAP/数据库等（优先于 YAML 名单）。
+
+---
+
+## 9. 加密配置文件（部署侧，无独立对外命令）
+
+框架在内部使用 Fernet（`cryptography`，见 `requirements.txt`）解密配置：**不提供** `spark_crypto` 等对外 CLI。
+
+若 `-c` 指向的文件为密文，由部署环境同时设置：
+
+- `SPARK_ENCRYPTED_CONFIG=1`（或 `true` / `yes` / `on`）
+- `SPARK_FERNET_KEY=<Fernet 密钥，与离线加密时一致>`
+
+仍使用常规命令，例如：`python bin/spark -c proj.yaml.enc init_env`。  
+离线如何生成密文与密钥由团队自行脚本完成（勿将密钥写入仓库）。
+
+---
+
+## 10. 推荐执行顺序
 
 ```bash
 python bin/spark -c proj.yaml init_env

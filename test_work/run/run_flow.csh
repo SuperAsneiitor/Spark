@@ -4,7 +4,7 @@
 # Project     : fake_stdcell_28nm
 # Tech Node   : 28nm
 # Case        : fake_stdcell / v1.0
-# Generated   : 2026-04-10 17:01:28
+# Generated   : 2026-04-11 14:23:59
 #
 # 使用方式:
 #   csh -f C:\Users\Asneiitor\Desktop\AI_exploree\Altas\test_work\run/run_flow.csh [--from STAGE]

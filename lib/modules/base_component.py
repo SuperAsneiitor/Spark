@@ -5,7 +5,7 @@ lib/modules/base_component.py
 设计原则：
   - 单一职责：基类只定义"流程骨架"，子类负责"内容填充"
   - 开闭原则：新增阶段只需继承并实现 _generate_scripts，无需修改基类
-  - 标准目录树：所有阶段共享统一的子目录约定 (run/scr/log/rpt/release)
+  - 标准目录树：work/<case>/<version>/<stage>/ 下 run/scr/check/report/release 等
 """
 from __future__ import annotations
 
@@ -78,7 +78,7 @@ class BaseComponent(ABC):
         1. create_env()    → 创建目录树 + 渲染生成脚本
         2. run()           → 拉起 C-Shell 执行脚本
         3. check_result()  → 校验日志与产出文件，返回 StageResult
-        4. extract_report() → 抽取关键信息，写入 rpt/<stage>_summary.rpt
+        4. extract_report() → 抽取关键信息，写入 report/<stage>_summary.rpt
 
     子类必须实现：
         _generate_scripts()  — 利用 Jinja2 模板渲染本阶段所需的 .csh / .tcl 脚本
@@ -95,14 +95,18 @@ class BaseComponent(ABC):
         self.config: SparkConfig = config
 
         # project_root : 项目顶层（init_env 在此建立 work/ incoming/ run/ 等）
-        # root_dir     : 子模块阶段落点（project_root/work/）
+        # root_dir     : project_root/work/
+        # case_root    : work/<case_name>/<case_version>/（除 init_env 外各阶段沙箱根）
         try:
             self.project_root: Path = config.work_dir
         except Exception:
             self.project_root = Path.cwd()
 
-        self.root_dir:    Path = self.project_root / "work"
-        self.stage_dir:   Path = self.root_dir / stage_name
+        self.root_dir: Path = self.project_root / "work"
+        self.case_name: str = config.case_name
+        self.case_version: str = config.case_version
+        self.case_root: Path = self.root_dir / self.case_name / self.case_version
+        self.stage_dir: Path = self.case_root / stage_name
 
         # ── 功能子目录（每个功能独立成目录）──────────────────────────────
         self.run_dir:     Path = self.stage_dir / "run"

@@ -23,6 +23,8 @@ from lib.utils.logger         import get_logger
 logger = get_logger(__name__)
 
 _UPSTREAM_STAGES = [
+    "porting_gds",
+    "porting_lef",
     "gen_gds",
     "gen_spice",
     "gen_lib",
@@ -79,7 +81,7 @@ class ReleaseComponent(BaseComponent):
         """从所有上游阶段的 release/output_file/ 目录中收集产出文件。"""
         artifacts: list[Path] = []
         for stage in _UPSTREAM_STAGES:
-            stage_out = self.root_dir / stage / "release" / "output_file"
+            stage_out = self.case_root / stage / "release" / "output_file"
             if stage_out.is_dir():
                 files = collect_files(stage_out, pattern="*", recursive=True)
                 artifacts.extend(files)

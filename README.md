@@ -9,6 +9,8 @@ StdCell library automation framework built with Python 3.9+, designed to combine
 - Unified stage directories: `run/`, `scr/`, `check/`, `report/`, `release/`
 - Config-driven flow with YAML + Jinja2 templates
 - Local demo environment under `test_work/`
+- Optional internal Fernet decryption for YAML when `SPARK_ENCRYPTED_CONFIG` + `SPARK_FERNET_KEY` are set (see User Guide)
+- Optional CLI license gate via `spark_system.yaml` / `SPARK_SYSTEM_CONFIG` (see User Guide)
 
 ## Quick Start
 
@@ -34,6 +36,7 @@ python bin/spark -c test_work/proj.yaml run_all --from-stage gen_lib
 - Developer Guide: `share/doc/DEVELOPER_GUIDE.md`
 - Interface Spec: `share/doc/INTERFACE_SPEC.md`
 - Demo: `share/doc/DEMO.md`
+- Nuitka Linux binary build (standalone / one-folder): `share/doc/NUITKA_BUILD.md`
 
 ## License
 
